@@ -1,24 +1,26 @@
 SpaceShip battleStarGalactica = new SpaceShip();
 Star [] galaxy;
-
-//Asteroid rocks = new Asteroid();
-Asteroid [] rocks;
+ArrayList <Asteroid> planet = new ArrayList <Asteroid>();
+boolean keyz[] = new boolean [5];
 
 public void setup() 
 {
-  size(800,500);
-  galaxy = new Star[300];
-  rocks = new Asteroid[5];
+  size(1000,800);
+  galaxy = new Star[1000];
+
+  //ArrayList <Asteroid> planet = new ArrayList <Asteroid>();
+  for (int k=0; k<10; k++)
+  {
+    planet.add(new Asteroid());
+  }
 
   for (int i=0; i<galaxy.length; i++)
   {
     galaxy[i] = new Star();
   }
 
-  for (int j=0; j<rocks.length; j++)
-  {
-    rocks[j] = new Asteroid();
-  }
+
+
 }
 
 public void draw() 
@@ -29,46 +31,84 @@ public void draw()
     galaxy[i].starShow();
   }
 
-  for (int j=0; j<rocks.length; j++)
+  for (int j=0; j<planet.size(); j++)
   {
-    rocks[j].show();
-    rocks[j].move();
+    planet.get(j).show();
+    planet.get(j).move();
+    double dis = dist(battleStarGalactica.getX(),battleStarGalactica.getY(),planet.get(j).getX(),planet.get(j).getY());
+    System.out.println(dis);
+    if (dis < 40)
+    {
+      planet.remove(j);
+      planet.add(new Asteroid());
+    }
+    /*if (planet.get(j).myDirectionX == 0 && planet.get(j).myDirectionY == 0)
+    {
+      planet.get(j).myDirectionX = (int)(Math.random()*3)-1;
+      planet.get(j).myDirectionX = (int)(Math.random()*3)-1;
+    }*/
   }
+
   battleStarGalactica.show();
   battleStarGalactica.move();
-  //rocks.show();
-  //rocks.move();
+  keyShipMove();
+
 }
 
 public void keyPressed()
 {
-  if (keyCode == LEFT)
+  if (keyCode == LEFT)  keyz[0] = true;
+  if (keyCode == RIGHT)  keyz[1] = true;
+  if (keyCode == UP)  keyz[2] = true;
+  if (keyCode == DOWN)  keyz[3] = true;
+  if (key == ' ') keyz[4] = true;
+}
+ 
+public void keyReleased()
+{
+  if (keyCode == LEFT)  keyz[0] = false;
+  if (keyCode == RIGHT)  keyz[1] = false;
+  if (keyCode == UP)  keyz[2] = false;
+  if (keyCode == DOWN)  keyz[3] = false;
+  if (key == ' ') keyz[4] = false;
+}
+
+public void keyShipMove()
+{
+  for (int i = 0; i < keyz.length; i++)
   {
-    battleStarGalactica.rotate(-15);
+    //System.out.println(keyz[i]);
+    if (keyz[i])
+    {
+      if (keyz[0] == true)
+      {
+        battleStarGalactica.rotate(-8);
+      }
+      if (keyz[1] == true)
+      {
+        battleStarGalactica.rotate(8);
+      }
+      if (keyz[2] == true)
+      {
+        battleStarGalactica.accelerate(.2);
+      }
+      if (keyz[3] == true)
+      {
+        battleStarGalactica.accelerate(-.2);
+      }
+      if (keyz[4] == true)
+      {
+        battleStarGalactica.setX((int)random(1000));
+        battleStarGalactica.setY((int)random(800));
+        battleStarGalactica.setDirectionX(0);
+        battleStarGalactica.setDirectionY(0);
+        noFill();
+        strokeWeight(5);
+        stroke(255,0,0);
+        rect(battleStarGalactica.getX()-25, battleStarGalactica.getY()-25, 50,50);
+    }
   }
-  if (keyCode == RIGHT)
-  {
-    battleStarGalactica.rotate(15);
-  }
-  if (keyCode == UP)
-  {
-    battleStarGalactica.accelerate(.2);
-  }
-  if (keyCode == DOWN)
-  {
-    battleStarGalactica.accelerate(-.2);
-  }
-  if (key == ' ')
-  {
-    battleStarGalactica.setX((int)random(800));
-    battleStarGalactica.setY((int)random(500));
-    battleStarGalactica.setDirectionX(0);
-    battleStarGalactica.setDirectionY(0);
-    noFill();
-    strokeWeight(5);
-    stroke(255,0,0);
-    rect(battleStarGalactica.getX(), battleStarGalactica.getY(), 50,50);
-  }
+}
 }
 
 class Star
@@ -76,8 +116,8 @@ class Star
   private int starX, starY, starSize;
   Star()
   {
-    starX = (int)(Math.random()*800)+1;
-    starY = (int)(Math.random()*500)+1;
+    starX = (int)(Math.random()*1000)+1;
+    starY = (int)(Math.random()*800)+1;
     starSize = (int)(Math.random()*4)+1;
   }
   public void starShow()
@@ -92,18 +132,24 @@ class SpaceShip extends Floater
 {   
   public SpaceShip()
   {
-    corners = 3;
+    corners = 9;
     xCorners = new int [corners];
     yCorners = new int [corners];
-    myColor = 255;
-    myCenterX = 400;
-    myCenterY = 250;
+    myColor = color(218, 53, 53);
+    myCenterX = 500;
+    myCenterY = 400;
     myPointDirection = 0;
     myDirectionX = 0;
     myDirectionY = 0;
-    xCorners[0] = 15; yCorners[0] = 0;
-    xCorners[1] = -10; yCorners[1] = 8;
-    xCorners[2] = -10; yCorners[2] = -8;
+    xCorners[0] = 5; yCorners[0] = -10;
+    xCorners[1] = 10; yCorners[1] = -5;
+    xCorners[2] = 15; yCorners[2] = 0;
+    xCorners[3] = 10; yCorners[3] = 5;
+    xCorners[4] = 5; yCorners[4] = 10;
+    xCorners[5] = -10; yCorners[5] = 10;
+    xCorners[6] = -5; yCorners[6] = 5;
+    xCorners[7] = -5; yCorners[7] = -5;
+    xCorners[8] = -10; yCorners[8] = -10;
   }
   public void setX(int x){myCenterX = x;}
   public int getX(){return (int)myCenterX;}
@@ -127,11 +173,11 @@ class Asteroid extends Floater
     xCorners = new int [corners];
     yCorners = new int [corners];
     myColor = 100;
-    myCenterX = (int)(Math.random()*800);
-    myCenterY = (int)(Math.random()*500);
+    myCenterX = (int)(Math.random()*1000);
+    myCenterY = (int)(Math.random()*800);
     myPointDirection = Math.random()*360;
-    myDirectionX = (int)(Math.random()*3)-1;
-    myDirectionY = (int)(Math.random()*3)-1;
+    myDirectionX = (int)(Math.random()*5)-1;
+    myDirectionY = (int)(Math.random()*5)-1;
     xCorners[0] = 15; yCorners[0] = -25;
     xCorners[1] = 25; yCorners[1] = -15;
     xCorners[2] = 25; yCorners[2] = 15;
