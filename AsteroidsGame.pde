@@ -1,7 +1,14 @@
 SpaceShip battleStarGalactica = new SpaceShip();
+LaserSight lazer = new LaserSight();
 Star [] galaxy;
-ArrayList <Asteroid> planet = new ArrayList <Asteroid>();
-boolean keyz[] = new boolean [5];
+ArrayList <Asteroid> armageddon = new ArrayList <Asteroid>();
+ArrayList <Bullet> fullMetalJacket = new ArrayList <Bullet>();
+//Bullet fullMetalJacket = new Bullet(battleStarGalactica);
+boolean keyz[] = new boolean [4];
+
+
+int score = 0;
+boolean gameOver = false;
 
 public void setup() 
 {
@@ -11,7 +18,7 @@ public void setup()
   //ArrayList <Asteroid> planet = new ArrayList <Asteroid>();
   for (int k=0; k<10; k++)
   {
-    planet.add(new Asteroid());
+    armageddon.add(new Asteroid());
   }
 
   for (int i=0; i<galaxy.length; i++)
@@ -20,39 +27,113 @@ public void setup()
   }
 
 
-
 }
 
 public void draw() 
 {
   background(0);
+  if (gameOver == true)
+  {
+    textSize(50);
+    fill(0,222,255);
+    textAlign(CENTER);
+    text("GAME OVER", 500, 200);
+    text("Score:"+score, 500, 400);
+    text("Press N to start", 500, 600);
+    battleStarGalactica = new SpaceShip();
+    lazer = new LaserSight();
+  }
+  if (gameOver == false)
+  {
+    
+  
+
   for (int i=0; i<galaxy.length; i++)
   {
     galaxy[i].starShow();
   }
 
-  for (int j=0; j<planet.size(); j++)
+  for (int j=0; j<armageddon.size(); j++)
   {
-    planet.get(j).show();
-    planet.get(j).move();
-    double dis = dist(battleStarGalactica.getX(),battleStarGalactica.getY(),planet.get(j).getX(),planet.get(j).getY());
-    System.out.println(dis);
-    if (dis < 40)
+    armageddon.get(j).show();
+    armageddon.get(j).move();
+    double dis = dist(battleStarGalactica.getX(),battleStarGalactica.getY(),armageddon.get(j).getX(),armageddon.get(j).getY()); // asteroid collision w ship
+    if (dis < 35)
     {
-      planet.remove(j);
-      planet.add(new Asteroid());
+      armageddon.remove(j);
+      armageddon.add(new Asteroid());
+      gameOver = true;
     }
-    /*if (planet.get(j).myDirectionX == 0 && planet.get(j).myDirectionY == 0)
+
+    for (int m=0; m<fullMetalJacket.size(); m++)
     {
-      planet.get(j).myDirectionX = (int)(Math.random()*3)-1;
-      planet.get(j).myDirectionX = (int)(Math.random()*3)-1;
-    }*/
+      double dis2 = dist(fullMetalJacket.get(m).getX(),fullMetalJacket.get(m).getY(),armageddon.get(j).getX(),armageddon.get(j).getY()); // asteroid collision w bullet
+      if (dis2 < 35)
+      {
+        armageddon.remove(j);
+        fullMetalJacket.remove(m);
+        armageddon.add(new Asteroid());
+        score++;
+        if (score % 10 == 0)
+        {
+          for (int h = 0; h<armageddon.size(); h++)
+          {
+            armageddon.get(h).setDirectionX(armageddon.get(h).getDirectionX()*2);
+            armageddon.get(h).setDirectionY(armageddon.get(h).getDirectionY()*2);
+          }
+        }
+        /*if (score == 10 || score == 20 || score == 30 || score == 40 || score == 50)
+        {
+          //armageddon.add(new Asteroid());
+            for (int h=0; h<armageddon.size(); h++)
+            {
+              Asteroid faster = armageddon.get(h);
+              faster.setDirectionX(faster.getDirectionX()*2);
+              faster.setDirectionY(faster.getDirectionY()*2);
+              if (gameOver == true)
+              {
+                faster.setDirectionX((int)(Math.random()*5)-1);
+                faster.setDirectionY((int)(Math.random()*5)-1);
+              }
+            }
+        }*/
+        /*if (score > 0 && score < 500)
+        {
+          textSize(50);
+          //text("Shotgun", 50,50);
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+          fullMetalJacket.add(new Bullet(battleStarGalactica));
+        }   */
+      }
+    }
+    
+    System.out.println(dis);
+    
   }
 
+  for (int n=0; n<fullMetalJacket.size(); n++)
+  {
+    fullMetalJacket.get(n).show();
+    fullMetalJacket.get(n).move();
+    if (fullMetalJacket.get(n).getX() > 995 || fullMetalJacket.get(n).getX() < 5 || fullMetalJacket.get(n).getY() > 795 || fullMetalJacket.get(n).getY() < 5)
+    {
+      fullMetalJacket.remove(n);
+    }
+  }
+
+  lazer.show();
+  lazer.move();
   battleStarGalactica.show();
   battleStarGalactica.move();
   keyShipMove();
-
+  textSize(50);
+  fill(0,255,0);
+  text(score,500,750);
+}
 }
 
 public void keyPressed()
@@ -61,7 +142,8 @@ public void keyPressed()
   if (keyCode == RIGHT)  keyz[1] = true;
   if (keyCode == UP)  keyz[2] = true;
   if (keyCode == DOWN)  keyz[3] = true;
-  if (key == ' ') keyz[4] = true;
+  //if (key == 'b') keyz[4] = true;
+  if (key == 'n') {gameOver = false; score = 0;}
 }
  
 public void keyReleased()
@@ -70,7 +152,21 @@ public void keyReleased()
   if (keyCode == RIGHT)  keyz[1] = false;
   if (keyCode == UP)  keyz[2] = false;
   if (keyCode == DOWN)  keyz[3] = false;
-  if (key == ' ') keyz[4] = false;
+  if (key == 'b')
+  {
+    battleStarGalactica.setX((int)random(1000));
+    battleStarGalactica.setY((int)random(800));
+    battleStarGalactica.setDirectionX(0);
+    battleStarGalactica.setDirectionY(0);
+    lazer.setX(battleStarGalactica.getX());
+    lazer.setY(battleStarGalactica.getY());
+    lazer.setDirectionX(0);
+    lazer.setDirectionY(0);
+  }
+  if (key == ' ')
+  {
+    fullMetalJacket.add(new Bullet(battleStarGalactica));
+  }
 }
 
 public void keyShipMove()
@@ -83,32 +179,25 @@ public void keyShipMove()
       if (keyz[0] == true)
       {
         battleStarGalactica.rotate(-8);
+        lazer.rotate(-8);
       }
       if (keyz[1] == true)
       {
         battleStarGalactica.rotate(8);
+        lazer.rotate(8);
       }
       if (keyz[2] == true)
       {
         battleStarGalactica.accelerate(.2);
+        lazer.accelerate(.2);
       }
       if (keyz[3] == true)
       {
         battleStarGalactica.accelerate(-.2);
+        lazer.accelerate(-.2);
       }
-      if (keyz[4] == true)
-      {
-        battleStarGalactica.setX((int)random(1000));
-        battleStarGalactica.setY((int)random(800));
-        battleStarGalactica.setDirectionX(0);
-        battleStarGalactica.setDirectionY(0);
-        noFill();
-        strokeWeight(5);
-        stroke(255,0,0);
-        rect(battleStarGalactica.getX()-25, battleStarGalactica.getY()-25, 50,50);
     }
   }
-}
 }
 
 class Star
@@ -135,7 +224,7 @@ class SpaceShip extends Floater
     corners = 9;
     xCorners = new int [corners];
     yCorners = new int [corners];
-    myColor = color(218, 53, 53);
+    myColor = color(0, 255, 255);
     myCenterX = 500;
     myCenterY = 400;
     myPointDirection = 0;
@@ -164,6 +253,44 @@ class SpaceShip extends Floater
   
 }
 
+class LaserSight extends SpaceShip  
+{   
+  public LaserSight()
+  {
+    corners = 11;
+    xCorners = new int [corners];
+    yCorners = new int [corners];
+    myColor = color(255, 0, 0);
+    myCenterX = 500;
+    myCenterY = 400;
+    myPointDirection = battleStarGalactica.getPointDirection();
+    myDirectionX = battleStarGalactica.getDirectionX();
+    myDirectionY = battleStarGalactica.getDirectionY();
+    xCorners[0] = 5; yCorners[0] = -10;
+    xCorners[1] = 10; yCorners[1] = -5;
+    xCorners[2] = 15; yCorners[2] = 0;
+    xCorners[3] = 1000; yCorners[3] = 0;
+    xCorners[4] = 15; yCorners[4] = 0;
+    xCorners[5] = 10; yCorners[5] = 5;
+    xCorners[6] = 5; yCorners[6] = 10;
+    xCorners[7] = -10; yCorners[7] = 10;
+    xCorners[8] = -5; yCorners[8] = 5;
+    xCorners[9] = -5; yCorners[9] = -5;
+    xCorners[10] = -10; yCorners[10] = -10;
+  }
+  public void setX(int x){myCenterX = x;}
+  public int getX(){return (int)myCenterX;}
+  public void setY(int y){myCenterY = y;}
+  public int getY(){return (int)myCenterY;}
+  public void setDirectionX(double x){myDirectionX = x;}
+  public double getDirectionX(){return myDirectionX;}
+  public void setDirectionY(double y){myDirectionY = y;}
+  public double getDirectionY(){return myDirectionY;}
+  public void setPointDirection(int degrees){myPointDirection = degrees;}
+  public double getPointDirection(){return myPointDirection;}
+  
+}
+
 class Asteroid extends Floater
 {
   private int myRotation;
@@ -172,12 +299,12 @@ class Asteroid extends Floater
     corners = 8;
     xCorners = new int [corners];
     yCorners = new int [corners];
-    myColor = 100;
+    myColor = (int)(Math.random()*200)+50;
     myCenterX = (int)(Math.random()*1000);
     myCenterY = (int)(Math.random()*800);
     myPointDirection = Math.random()*360;
-    myDirectionX = (int)(Math.random()*5)-1;
-    myDirectionY = (int)(Math.random()*5)-1;
+    myDirectionX = (double)(Math.random()*5)-1;
+    myDirectionY = (double)(Math.random()*5)-1;
     xCorners[0] = 15; yCorners[0] = -25;
     xCorners[1] = 25; yCorners[1] = -15;
     xCorners[2] = 25; yCorners[2] = 15;
@@ -223,6 +350,36 @@ class Asteroid extends Floater
     {     
       myCenterY = height;    
     }   
+  }
+}
+
+class Bullet extends Floater
+{
+  public Bullet(SpaceShip xWing)
+  {
+    myCenterX = xWing.getX();
+    myCenterY = xWing.getY();
+    myPointDirection = xWing.getPointDirection() + (Math.random()*25-12);
+    double dRadians = myPointDirection*(Math.PI/180);
+    myDirectionX = 10 * Math.cos(dRadians) + xWing.getDirectionX();
+    myDirectionY = 10 * Math.sin(dRadians) + xWing.getDirectionY();
+  }
+  public void setX(int x){myCenterX = x;}
+  public int getX(){return (int)myCenterX;}
+  public void setY(int y){myCenterY = y;}
+  public int getY(){return (int)myCenterY;}
+  public void setDirectionX(double x){myDirectionX = x;}
+  public double getDirectionX(){return myDirectionX;}
+  public void setDirectionY(double y){myDirectionY = y;}
+  public double getDirectionY(){return myDirectionY;}
+  public void setPointDirection(int degrees){myPointDirection = degrees;}
+  public double getPointDirection(){return myPointDirection;}
+  
+  public void show()
+  {
+    fill(0,255,0);
+    noStroke();
+    ellipse((int)myCenterX, (int)myCenterY, 5, 5);
   }
 }
 
@@ -301,5 +458,4 @@ abstract class Floater //Do NOT modify the Floater class! Make changes in the Sp
     }   
     endShape(CLOSE);  
   }   
-} 
-
+}
