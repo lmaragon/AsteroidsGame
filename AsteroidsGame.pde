@@ -109,10 +109,7 @@ public void draw()
           fullMetalJacket.add(new Bullet(battleStarGalactica));
         }   */
       }
-    }
-    
-    System.out.println(dis);
-    
+    }    
   }
 
   for (int n=0; n<fullMetalJacket.size(); n++)
@@ -173,7 +170,6 @@ public void keyShipMove()
 {
   for (int i = 0; i < keyz.length; i++)
   {
-    //System.out.println(keyz[i]);
     if (keyz[i])
     {
       if (keyz[0] == true)
